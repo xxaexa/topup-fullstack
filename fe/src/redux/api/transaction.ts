@@ -53,7 +53,7 @@ export const transactionApi = createApi({
     updateTransactionStatus: builder.mutation<any, string>({
       query: (id) => ({
         url: `/transaction/update-status/${id}`,
-        method: "PUT",
+        method: "GET",
       }),
     }),
   }),

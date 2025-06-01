@@ -24,7 +24,7 @@ const TransactionSchema = new Schema({
   },
   delivery_status: {
     type: String,
-    enum: ["pending", "processing", "completed", "failed"],
+    enum: ["pending", "processing", "success", "failed"],
     default: "pending",
   },
   order_id: { type: String },

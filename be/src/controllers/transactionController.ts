@@ -70,15 +70,17 @@ export const createTransaction = async (req: Request, res: Response) => {
 // update transaction status
 export const updateTransactionStatus = async (req: Request, res: Response) => {
   try {
-    console.log(req.params.id)
     const transaction = await Transaction.findByIdAndUpdate(
       req.params.id,
       { payment_status: "paid" },
-      { new: true }
+      { new: true } // return the updated document
     );
-   
-    await transaction.save();
-   
+
+    if (!transaction) {
+     res.status(404).json({ message: "Transaction not found" });
+      return
+    }
+
     res.status(200).json({
       message: "Payment status updated successfully",
       payment_status: transaction.payment_status,
