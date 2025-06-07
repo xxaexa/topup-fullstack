@@ -73,7 +73,7 @@ export const updateTransactionStatus = async (req: Request, res: Response) => {
     const transaction = await Transaction.findByIdAndUpdate(
       req.params.id,
       { payment_status: "paid" },
-      { new: true } // return the updated document
+      { new: true } 
     );
 
     if (!transaction) {

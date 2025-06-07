@@ -1,27 +1,51 @@
 import { useParams } from "react-router-dom";
-import { useGetTransactionByIdQuery } from "../../redux/api/transaction";
+import {
+  useGetTransactionByIdQuery,
+  useUpdateTransactionStatusMutation,
+} from "../../redux/api/transaction";
 import { Box, ContainerWrap } from "../../components";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const TransactionDetail = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading, isError, isSuccess } = useGetTransactionByIdQuery(
-    id!,
-    {
+  const { data, isLoading, isError, isSuccess, refetch } =
+    useGetTransactionByIdQuery(id!, {
       skip: !id,
-    }
-  );
+    });
 
   const transaction = data?.data;
+
+  const [updateStatus, { isLoading: isUpdating }] =
+    useUpdateTransactionStatusMutation();
+
+  useEffect(() => {
+    const updateTransaction = async () => {
+      try {
+        await new Promise((res) => setTimeout(res, 3000));
+        if (id) {
+          await updateStatus(id).unwrap();
+          toast.success("Status transaksi diperbarui!");
+          refetch();
+        }
+      } catch (err: any) {
+        toast.error("Gagal memperbarui status transaksi");
+        console.error(err);
+      }
+    };
+
+    updateTransaction();
+  }, [id, updateStatus, refetch]);
 
   return (
     <ContainerWrap>
       <Box className="bg-white dark:bg-gray-800 shadow rounded-xl p-4 my-12">
-        {/* {isUpdating && (
+        {isUpdating && (
           <p className="mb-4 text-blue-600 font-semibold">
             Memperbarui status transaksi...
           </p>
-        )} */}
+        )}
 
         {isLoading ? (
           <p>Sedang memuat detail transaksi...</p>
@@ -44,11 +68,6 @@ const TransactionDetail = () => {
               <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
                 <strong>Nama Voucher:</strong>
                 <p>{transaction.voucher_name}</p>
-              </div>
-
-              <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-                <strong>Metode Pembayaran:</strong>
-                <p>{transaction.payment_method}</p>
               </div>
 
               <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">

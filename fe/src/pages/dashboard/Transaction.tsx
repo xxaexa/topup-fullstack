@@ -26,6 +26,7 @@ export interface Transaction {
   payment_status: string;
   delivery_status: string;
   variant: Variant;
+  transaction_id: Variant;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,17 +36,11 @@ export interface TransactionResponse {
   data: Transaction[];
 }
 
-interface UpdateTransactionRequest {
-  _id: string;
-  delivery_status: string;
-  buyer_email: string;
-}
-
 const TransactionPage = () => {
   const { data = [], isLoading } = useGetTransactionsQuery();
   const [updateTransaction] = useUpdateTransactionMutation();
   const [search, setSearch] = useState("");
-  const [sortAsc, setSortAsc] = useState(true);
+  const [sortAsc, setSortAsc] = useState(false);
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Transaction | null>(null);
   const [deliveryStatus, setDeliveryStatus] = useState("pending");
@@ -102,18 +97,22 @@ const TransactionPage = () => {
       ) : (
         <div className="bg-white dark:bg-gray-900 shadow-md rounded-lg overflow-hidden">
           <Table
-            headers={["ID", "Email", "Voucher", "Harga", "Status", "Aksi"]}
+            headers={[
+              "ID",
+              "Email",
+              "Status Pembayaran",
+              "Status pengiriman",
+              "Aksi",
+            ]}
             data={paginated.map((t) => [
               <span className="text-sm font-mono text-text-dark">{t._id}</span>,
               <span className="font-medium text-text-dark">
                 {t.buyer_email}
               </span>,
-              <span className="text-text-dark">{t.voucher_name}</span>,
-              <span className="text-text-dark">
-                Rp {t.variant.price.toLocaleString()}
-              </span>,
-              <div className="text-xs text-center cursor-pointer">
+              <div className="text-xs">
                 <p className="text-text-dark">{t.payment_status}</p>
+              </div>,
+              <div className="text-xs">
                 <p className="text-text-dark">{t.delivery_status}</p>
               </div>,
               <div className="space-x-2">
